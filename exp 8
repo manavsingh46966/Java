@@ -1,0 +1,109 @@
+import java.util.*;
+
+// 1. Product Interface
+interface Product {
+    void displayDetails();
+}
+
+// 2. Legacy Class (Old System)
+class LegacyItem {
+    private int itemId;
+    private String description;
+
+    public LegacyItem(int itemId, String description) {
+        this.itemId = itemId;
+        this.description = description;
+    }
+
+    public void print() {
+        System.out.println("Legacy Item -> ID: " + itemId + ", Description: " + description);
+    }
+}
+
+// 3. Adapter Class
+class ProductAdapter implements Product {
+    private LegacyItem legacyItem;
+
+    public ProductAdapter(LegacyItem legacyItem) {
+        this.legacyItem = legacyItem;
+    }
+
+    @Override
+    public void displayDetails() {
+        legacyItem.print();  // Adapting old method
+    }
+}
+
+// 4. New Product Class
+class NewProduct implements Product {
+    private String name;
+
+    public NewProduct(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void displayDetails() {
+        System.out.println("New Product -> Name: " + name);
+    }
+}
+
+// 5. Singleton Inventory Manager
+class InventoryManager {
+
+    private static InventoryManager instance;
+    private List<Product> productList;
+
+    // Private constructor
+    private InventoryManager() {
+        productList = new ArrayList<>();
+    }
+
+    // Singleton instance getter
+    public static InventoryManager getInstance() {
+        if (instance == null) {
+            instance = new InventoryManager();
+        }
+        return instance;
+    }
+
+    // Add product
+    public void addProduct(Product product) {
+        productList.add(product);
+    }
+
+    // Return iterator
+    public Iterator<Product> returnInventory() {
+        return productList.iterator();
+    }
+}
+
+// 6. Main Class
+public class Main {
+    public static void main(String[] args) {
+
+        // Get Singleton Instance
+        InventoryManager manager = InventoryManager.getInstance();
+
+        // Add New Products
+        manager.addProduct(new NewProduct("Laptop"));
+        manager.addProduct(new NewProduct("Mobile"));
+
+        // Add Legacy Products using Adapter
+        LegacyItem item1 = new LegacyItem(101, "Old Keyboard");
+        LegacyItem item2 = new LegacyItem(102, "Old Monitor");
+
+        manager.addProduct(new ProductAdapter(item1));
+        manager.addProduct(new ProductAdapter(item2));
+
+        // Iterator Usage
+        System.out.println("📦 Inventory Details:\n");
+
+        Iterator<Product> iterator = manager.returnInventory();
+
+        while (iterator.hasNext()) {
+            Product p = iterator.next();
+            p.displayDetails();
+        }
+    }
+}
