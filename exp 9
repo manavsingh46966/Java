@@ -1,0 +1,76 @@
+import java.sql.*;
+
+public class RestaurantCRUD {
+
+    static final String URL = "jdbc:mysql://localhost:3306/testdb";
+    static final String USER = "root";
+    static final String PASS = "password";
+
+    public static void main(String[] args) {
+        try (Connection con = DriverManager.getConnection(URL, USER, PASS)) {
+
+            Statement st = con.createStatement();
+
+            st.executeUpdate("INSERT INTO Restaurant VALUES (1,'Cafe Java','Mumbai')");
+            st.executeUpdate("INSERT INTO Restaurant VALUES (2,'Spice Hub','Delhi')");
+            st.executeUpdate("INSERT INTO Restaurant VALUES (3,'Food Point','Pune')");
+            st.executeUpdate("INSERT INTO Restaurant VALUES (4,'Urban Tadka','Mumbai')");
+            st.executeUpdate("INSERT INTO Restaurant VALUES (5,'Green Bowl','Bangalore')");
+            st.executeUpdate("INSERT INTO Restaurant VALUES (6,'Tasty Treat','Chennai')");
+            st.executeUpdate("INSERT INTO Restaurant VALUES (7,'Royal Dine','Hyderabad')");
+            st.executeUpdate("INSERT INTO Restaurant VALUES (8,'Quick Bite','Kolkata')");
+            st.executeUpdate("INSERT INTO Restaurant VALUES (9,'Street Feast','Jaipur')");
+            st.executeUpdate("INSERT INTO Restaurant VALUES (10,'Cafe Delight','Goa')");
+
+            st.executeUpdate("INSERT INTO MenuItem VALUES (1,'Pizza',90,1)");
+            st.executeUpdate("INSERT INTO MenuItem VALUES (2,'Pasta',120,1)");
+            st.executeUpdate("INSERT INTO MenuItem VALUES (3,'Burger',80,2)");
+            st.executeUpdate("INSERT INTO MenuItem VALUES (4,'Sandwich',70,3)");
+            st.executeUpdate("INSERT INTO MenuItem VALUES (5,'Fries',60,4)");
+            st.executeUpdate("INSERT INTO MenuItem VALUES (6,'Coffee',50,1)");
+            st.executeUpdate("INSERT INTO MenuItem VALUES (7,'Tea',30,5)");
+            st.executeUpdate("INSERT INTO MenuItem VALUES (8,'Noodles',110,6)");
+            st.executeUpdate("INSERT INTO MenuItem VALUES (9,'Paratha',40,7)");
+            st.executeUpdate("INSERT INTO MenuItem VALUES (10,'Pav Bhaji',95,1)");
+
+            ResultSet rs1 = st.executeQuery("SELECT * FROM MenuItem WHERE Price <= 100");
+            print(rs1);
+
+            ResultSet rs2 = st.executeQuery(
+                "SELECT m.* FROM MenuItem m JOIN Restaurant r ON m.ResId=r.Id WHERE r.Name='Cafe Java'"
+            );
+            print(rs2);
+
+            st.executeUpdate("UPDATE MenuItem SET Price=200 WHERE Price <= 100");
+
+            ResultSet rs3 = st.executeQuery("SELECT * FROM MenuItem");
+            print(rs3);
+
+            st.executeUpdate("DELETE FROM MenuItem WHERE Name LIKE 'P%'");
+
+            ResultSet rs4 = st.executeQuery("SELECT * FROM MenuItem");
+            print(rs4);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    static void print(ResultSet rs) throws Exception {
+        ResultSetMetaData md = rs.getMetaData();
+        int cols = md.getColumnCount();
+
+        for (int i = 1; i <= cols; i++) {
+            System.out.print(md.getColumnName(i) + "\t");
+        }
+        System.out.println();
+
+        while (rs.next()) {
+            for (int i = 1; i <= cols; i++) {
+                System.out.print(rs.getString(i) + "\t");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+}
